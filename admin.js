@@ -14,29 +14,16 @@ function setStatus(msg,isError=false){statusEl.textContent=msg;statusEl.classNam
 function authHeaders(extra={}){return {apikey:SUPABASE_KEY,Authorization:`Bearer ${accessToken}`,...extra}}
 
 async function signIn(){
-  const email=document.getElementById('email').value.trim().toLowerCase();
+  const email=ADMIN_EMAIL;
   const password=document.getElementById('password').value;
-  if(email!==ADMIN_EMAIL){setStatus('등록된 관리자 이메일이 아닙니다.',true);return}
+  if(!password){setStatus('비밀번호를 입력하세요.',true);return}
   setStatus('로그인 중...');
   const res=await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`,{method:'POST',headers:{apikey:SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({email,password})});
   const data=await res.json();
-  if(!res.ok){setStatus(data.msg||data.error_description||'로그인에 실패했습니다.',true);return}
+  if(!res.ok){setStatus(data.msg||data.error_description||'비밀번호를 확인하세요.',true);return}
   accessToken=data.access_token;
   sessionStorage.setItem('badaAdminToken',accessToken);
-  showAdmin();
-}
-
-async function signUp(){
-  const email=document.getElementById('email').value.trim().toLowerCase();
-  const password=document.getElementById('password').value;
-  if(email!==ADMIN_EMAIL){setStatus('관리자 이메일은 bada.baroshop@gmail.com 만 사용할 수 있습니다.',true);return}
-  if(password.length<8){setStatus('비밀번호는 8자 이상으로 입력하세요.',true);return}
-  setStatus('관리자 계정 생성 요청 중...');
-  const res=await fetch(`${SUPABASE_URL}/auth/v1/signup`,{method:'POST',headers:{apikey:SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({email,password})});
-  const data=await res.json();
-  if(!res.ok){setStatus(data.msg||data.error_description||'계정 생성에 실패했습니다.',true);return}
-  if(data.access_token){accessToken=data.access_token;sessionStorage.setItem('badaAdminToken',accessToken);showAdmin();return}
-  setStatus('확인 메일을 보냈습니다. 메일 인증 후 로그인하세요.');
+  await showAdmin();
 }
 
 async function loadProducts(){
@@ -100,8 +87,8 @@ async function showAdmin(){
 function logout(){accessToken='';sessionStorage.removeItem('badaAdminToken');loginPanel.hidden=false;adminPanel.hidden=true;setStatus('로그아웃되었습니다.');}
 
 document.getElementById('loginBtn').onclick=signIn;
-document.getElementById('signupBtn').onclick=signUp;
 document.getElementById('saveBtn').onclick=saveAll;
 document.getElementById('logoutBtn').onclick=logout;
+document.getElementById('password').addEventListener('keydown',e=>{if(e.key==='Enter')signIn()});
 
 if(accessToken)showAdmin();
