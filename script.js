@@ -25,7 +25,19 @@ function escapeHtml(value=''){
   return String(value).replace(/[&<>'"]/g,(c)=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#039;','"':'&quot;'}[c]));
 }
 
+async function loadApprovedLogo(){
+  const logo=document.getElementById('brandLogo');
+  if(!logo)return;
+  try{
+    const res=await fetch('bada-logo.jpg.base64.txt',{cache:'force-cache'});
+    if(!res.ok)return;
+    const base64=(await res.text()).trim();
+    if(base64)logo.src=`data:image/jpeg;base64,${base64}`;
+  }catch(e){}
+}
+
 renderProducts();
+loadApprovedLogo();
 
 if(location.hostname==='localhost'||location.protocol==='file:'){
   const a=document.createElement('a');
