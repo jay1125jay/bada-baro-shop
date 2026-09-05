@@ -27,7 +27,30 @@ function escapeHtml(value=''){
   return String(value).replace(/[&<>'"]/g,(c)=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#039;','"':'&quot;'}[c]));
 }
 
+async function loadOfficialLogo(){
+  const current=document.querySelector('.brand-logo');
+  if(!current)return;
+  try{
+    const res=await fetch('official-logo.base64.txt?v=20260905-logo',{cache:'no-store'});
+    if(!res.ok)return;
+    const base64=(await res.text()).trim();
+    if(!base64)return;
+    const img=document.createElement('img');
+    img.className='brand-logo';
+    img.alt='바다에서바로 공식 로고';
+    img.src=`data:image/jpeg;base64,${base64}`;
+    img.style.width='104px';
+    img.style.height='104px';
+    img.style.objectFit='contain';
+    img.style.display='block';
+    current.replaceWith(img);
+    const brandText=document.querySelector('.brand-text');
+    if(brandText)brandText.style.display='none';
+  }catch(e){}
+}
+
 renderProducts();
+loadOfficialLogo();
 
 if(location.hostname==='localhost'||location.protocol==='file:'){
   const a=document.createElement('a');
