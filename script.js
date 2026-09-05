@@ -1,4 +1,9 @@
-const DEFAULT_PRODUCTS=[{name:'자숙 대게 (프리미엄)',desc:'살이 꽉 찬 프리미엄 대게',price:'₩89,000~',badge:'BEST',image:''},{name:'자숙 홍게',desc:'부드럽고 깊은 풍미의 홍게',price:'₩49,000~',badge:'추천',image:''},{name:'대게+홍게 세트',desc:'대게와 홍게를 한 번에 즐기는 구성',price:'₩129,000~',badge:'SET',image:''},{name:'대게 다리살 (자숙)',desc:'간편하게 즐기는 대게 다리살',price:'₩59,000~',badge:'NEW',image:''}];
+const DEFAULT_PRODUCTS=[
+  {name:'자숙 대게 (프리미엄)',desc:'살이 꽉 찬 프리미엄 대게',price:'₩89,000~',badge:'BEST',image:'https://commons.wikimedia.org/wiki/Special:Redirect/file/Jasuk-daege.jpg'},
+  {name:'자숙 홍게',desc:'부드럽고 깊은 풍미의 홍게',price:'₩49,000~',badge:'신상품',image:'https://commons.wikimedia.org/wiki/Special:Redirect/file/Boiled_Echizen_crab_(snow_crab)_male_and_female.jpg'},
+  {name:'대게+홍게 세트',desc:'대게와 홍게를 한 번에 즐기는 구성',price:'₩129,000~',badge:'추천',image:'https://commons.wikimedia.org/wiki/Special:Redirect/file/Seafood_crabs_legs_shrimp_food.jpg'},
+  {name:'대게 다리살 (자숙)',desc:'간편하게 즐기는 대게 다리살',price:'₩59,000~',badge:'인기',image:'https://commons.wikimedia.org/wiki/Special:Redirect/file/Frozen_Snow_Crab_Legs.jpg'}
+];
 
 function getProducts(){
   try{
@@ -8,54 +13,35 @@ function getProducts(){
   }catch(e){return DEFAULT_PRODUCTS;}
 }
 
-const crabPlaceholder=`<svg viewBox="0 0 220 180" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M76 88c0-30 16-52 34-52s34 22 34 52c0 28-17 48-34 48S76 116 76 88Z"/><path d="M82 65C61 47 42 47 31 59c-9 10-8 26 2 34 11 8 24 2 30-5M138 65c21-18 40-18 51-6 9 10 8 26-2 34-11 8-24 2-30-5M79 96 39 118M86 114l-32 34M141 96l40 22M134 114l32 34M95 134l-9 28M125 134l9 28"/><circle cx="98" cy="76" r="2.5" fill="currentColor"/><circle cx="122" cy="76" r="2.5" fill="currentColor"/><path d="M98 100c8 5 16 5 24 0"/></g></svg>`;
+function escapeHtml(value=''){
+  return String(value).replace(/[&<>'"]/g,(c)=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#039;','"':'&quot;'}[c]));
+}
 
 function renderProducts(){
   const grid=document.getElementById('productGrid');
   if(!grid)return;
   grid.innerHTML='';
-  getProducts().forEach((p)=>{
+  getProducts().forEach((p,i)=>{
+    const fallback=DEFAULT_PRODUCTS[i%DEFAULT_PRODUCTS.length].image;
     const card=document.createElement('article');
     card.className='product-card';
-    const media=p.image?`<div class="product-media"><img src="${p.image}" alt="${escapeHtml(p.name)}"></div>`:`<div class="product-media"><div class="product-placeholder">${crabPlaceholder}</div></div>`;
+    const media=`<div class="product-media"><img src="${p.image||fallback}" alt="${escapeHtml(p.name)}"></div>`;
     card.innerHTML=`${p.badge?`<span class="product-badge">${escapeHtml(p.badge)}</span>`:''}${media}<div class="product-info"><h3>${escapeHtml(p.name)}</h3><p>${escapeHtml(p.desc)}</p><div class="product-price">${escapeHtml(p.price)}</div></div>`;
     grid.appendChild(card);
   });
 }
 
-function escapeHtml(value=''){
-  return String(value).replace(/[&<>'"]/g,(c)=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#039;','"':'&quot;'}[c]));
-}
-
 async function loadOfficialLogo(){
-  const current=document.querySelector('.brand-logo');
-  if(!current)return;
+  const logo=document.getElementById('officialLogo');
+  if(!logo)return;
   try{
-    const res=await fetch('official-logo.base64.txt?v=20260905-logo',{cache:'no-store'});
-    if(!res.ok)return;
-    const base64=(await res.text()).trim();
-    if(!base64)return;
-    const img=document.createElement('img');
-    img.className='brand-logo';
-    img.alt='바다에서바로 공식 로고';
-    img.src=`data:image/jpeg;base64,${base64}`;
-    img.style.width='104px';
-    img.style.height='104px';
-    img.style.objectFit='contain';
-    img.style.display='block';
-    current.replaceWith(img);
-    const brandText=document.querySelector('.brand-text');
-    if(brandText)brandText.style.display='none';
-  }catch(e){}
+    const res=await fetch('official-logo.base64.txt?v=20260905-approved',{cache:'no-store'});
+    if(!res.ok)throw new Error('logo');
+    const b64=(await res.text()).trim();
+    if(!b64)throw new Error('logo');
+    logo.src=`data:image/jpeg;base64,${b64}`;
+  }catch(e){logo.alt='바다에서바로';}
 }
 
 renderProducts();
 loadOfficialLogo();
-
-if(location.hostname==='localhost'||location.protocol==='file:'){
-  const a=document.createElement('a');
-  a.href='admin.html';
-  a.className='admin-link';
-  a.textContent='관리자';
-  document.body.appendChild(a);
-}
