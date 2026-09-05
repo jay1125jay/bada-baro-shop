@@ -5,19 +5,33 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>바다에서바로 관리자</title>
   <style>
-    body{font-family:Arial,'Noto Sans KR',sans-serif;margin:0;background:#f4f6f7;color:#17232c}.wrap{width:min(1100px,calc(100% - 32px));margin:40px auto}.head{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:24px}.head h1{margin:0;color:#0b2b46}.head a,.head button{background:#0b2b46;color:#fff;border:0;text-decoration:none;padding:12px 16px;border-radius:4px;font-weight:700;cursor:pointer}.sub{color:#67737b;font-size:14px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}.card{background:#fff;padding:20px;border:1px solid #e1e6e9;border-radius:8px}.card h2{font-size:18px;color:#0b2b46;margin:0 0 14px}.field{margin-bottom:12px}.field label{display:block;font-size:12px;font-weight:700;margin-bottom:5px;color:#5d6972}.field input,.field textarea{width:100%;box-sizing:border-box;padding:10px;border:1px solid #ccd5da;border-radius:4px;font:inherit}.field textarea{min-height:82px;resize:vertical}.preview{width:100%;aspect-ratio:16/9;background:#e8eef1;display:grid;place-items:center;overflow:hidden;margin-bottom:12px}.preview img{width:100%;height:100%;object-fit:cover}.actions{display:flex;gap:10px;margin-top:22px}.secondary{background:#fff!important;color:#0b2b46!important;border:1px solid #0b2b46!important}.notice{margin:18px 0;background:#fff7e9;border:1px solid #ead4a6;padding:14px;border-radius:6px;font-size:13px;color:#6b5b36}@media(max-width:760px){.grid{grid-template-columns:1fr}.head{align-items:flex-start;flex-direction:column}.actions{flex-wrap:wrap}}
+    :root{--navy:#07314d;--line:#dfe6ea;--bg:#f4f7f9;--muted:#6f7f89;--red:#bf342c}
+    *{box-sizing:border-box}body{font-family:Arial,'Noto Sans KR',sans-serif;margin:0;background:var(--bg);color:#17232c}.wrap{width:min(1120px,calc(100% - 32px));margin:34px auto}.head{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:22px}.head h1{margin:0;color:var(--navy);font-size:28px}.head a,.head button,.btn{background:var(--navy);color:#fff;border:0;text-decoration:none;padding:11px 15px;border-radius:6px;font-weight:700;cursor:pointer}.sub{color:var(--muted);font-size:13px;margin-top:5px}.panel{background:#fff;border:1px solid var(--line);border-radius:10px;padding:22px;margin-bottom:18px}.login-box{max-width:520px}.field{margin-bottom:12px}.field label{display:block;font-size:12px;font-weight:700;margin-bottom:5px;color:#5d6972}.field input,.field textarea{width:100%;padding:11px;border:1px solid #ccd5da;border-radius:6px;font:inherit}.field textarea{min-height:82px;resize:vertical}.login-actions,.actions{display:flex;gap:10px;flex-wrap:wrap}.secondary{background:#fff!important;color:var(--navy)!important;border:1px solid var(--navy)!important}.status{margin:0 0 18px;background:#eaf5ef;border:1px solid #cde5d6;padding:12px 14px;border-radius:7px;font-size:13px;color:#285d3e}.status.error{background:#fff0ef;border-color:#f0cbc7;color:#8c2f29}.notice{margin:0 0 18px;background:#eef5f8;border:1px solid #d5e5eb;padding:14px;border-radius:7px;font-size:13px;color:#365563}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}.card{background:#fff;padding:20px;border:1px solid var(--line);border-radius:9px}.card h2{font-size:17px;color:var(--navy);margin:0 0 14px}.preview{width:100%;aspect-ratio:16/9;background:#e8eef1;display:grid;place-items:center;overflow:hidden;margin-bottom:12px;border-radius:6px}.preview img{width:100%;height:100%;object-fit:cover}.actions{margin-top:22px}.danger{background:#7a2b27!important}@media(max-width:760px){.grid{grid-template-columns:1fr}.head{align-items:flex-start;flex-direction:column}}
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="head">
-      <div><h1>바다에서바로 관리자</h1><div class="sub">상품명·설명·가격·배지·사진 수정</div></div>
+      <div><h1>바다에서바로 관리자</h1><div class="sub">Supabase 운영 DB 연결 · 상품명 / 설명 / 가격 / 배지 / 사진 관리</div></div>
       <a href="index.html">사이트 보기</a>
     </div>
-    <div class="notice">현재 버전은 MVP입니다. 변경 내용은 같은 브라우저의 localStorage에 저장됩니다. 운영용 관리자 계정·DB·이미지 저장소는 다음 단계에서 Supabase로 전환합니다.</div>
-    <div class="grid" id="editorGrid"></div>
-    <div class="actions"><button id="saveBtn">전체 저장</button><button id="resetBtn" class="secondary">기본값 복원</button></div>
+
+    <div id="status" class="status">관리자 로그인이 필요합니다.</div>
+
+    <section id="loginPanel" class="panel login-box">
+      <h2>관리자 로그인</h2>
+      <div class="field"><label>관리자 이메일</label><input id="email" type="email" value="bada.baroshop@gmail.com" autocomplete="username"></div>
+      <div class="field"><label>비밀번호</label><input id="password" type="password" autocomplete="current-password" placeholder="8자 이상"></div>
+      <div class="login-actions"><button id="loginBtn" class="btn">로그인</button><button id="signupBtn" class="btn secondary">최초 관리자 계정 만들기</button></div>
+      <div class="notice" style="margin-top:16px">최초 1회만 계정을 만든 뒤 메일 인증을 완료하세요. 이후에는 로그인만 사용하면 됩니다.</div>
+    </section>
+
+    <section id="adminPanel" hidden>
+      <div class="notice">이제 변경 내용은 이 브라우저에만 저장되는 것이 아니라 BADA_BAROSHOP Supabase DB에 저장됩니다. 상품 사진은 Supabase Storage에 저장됩니다.</div>
+      <div class="grid" id="editorGrid"></div>
+      <div class="actions"><button id="saveBtn" class="btn">전체 저장</button><button id="logoutBtn" class="btn danger">로그아웃</button></div>
+    </section>
   </div>
-  <script src="admin.js"></script>
+  <script src="admin.js?v=20260905-db1"></script>
 </body>
 </html>
