@@ -6,13 +6,13 @@
   <title>바다에서바로 관리자</title>
   <style>
     :root{--navy:#07314d;--line:#dfe6ea;--bg:#f4f7f9;--muted:#6f7f89;--red:#bf342c}
-    *{box-sizing:border-box}body{font-family:Arial,'Noto Sans KR',sans-serif;margin:0;background:var(--bg);color:#17232c}.wrap{width:min(1120px,calc(100% - 32px));margin:34px auto}.head{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:22px}.head h1{margin:0;color:var(--navy);font-size:28px}.head a,.head button,.btn{background:var(--navy);color:#fff;border:0;text-decoration:none;padding:11px 15px;border-radius:6px;font-weight:700;cursor:pointer}.sub{color:var(--muted);font-size:13px;margin-top:5px}.panel{background:#fff;border:1px solid var(--line);border-radius:10px;padding:22px;margin-bottom:18px}.login-box{max-width:520px}.field{margin-bottom:12px}.field label{display:block;font-size:12px;font-weight:700;margin-bottom:5px;color:#5d6972}.field input,.field textarea{width:100%;padding:11px;border:1px solid #ccd5da;border-radius:6px;font:inherit}.field textarea{min-height:82px;resize:vertical}.login-actions,.actions{display:flex;gap:10px;flex-wrap:wrap}.status{margin:0 0 18px;background:#eaf5ef;border:1px solid #cde5d6;padding:12px 14px;border-radius:7px;font-size:13px;color:#285d3e}.status.error{background:#fff0ef;border-color:#f0cbc7;color:#8c2f29}.notice{margin:0 0 18px;background:#eef5f8;border:1px solid #d5e5eb;padding:14px;border-radius:7px;font-size:13px;color:#365563}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}.card{background:#fff;padding:20px;border:1px solid var(--line);border-radius:9px}.card h2{font-size:17px;color:var(--navy);margin:0 0 14px}.preview{width:100%;aspect-ratio:16/9;background:#e8eef1;display:grid;place-items:center;overflow:hidden;margin-bottom:12px;border-radius:6px}.preview img{width:100%;height:100%;object-fit:cover}.actions{margin-top:22px}.secondary{background:#fff!important;color:var(--navy)!important;border:1px solid var(--navy)!important}.danger{background:#7a2b27!important}@media(max-width:760px){.grid{grid-template-columns:1fr}.head{align-items:flex-start;flex-direction:column}}
+    *{box-sizing:border-box}body{font-family:Arial,'Noto Sans KR',sans-serif;margin:0;background:var(--bg);color:#17232c}.wrap{width:min(1180px,calc(100% - 32px));margin:34px auto}.head{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:22px}.head h1{margin:0;color:var(--navy);font-size:28px}.head a,.head button,.btn{background:var(--navy);color:#fff;border:0;text-decoration:none;padding:11px 15px;border-radius:6px;font-weight:700;cursor:pointer}.sub{color:var(--muted);font-size:13px;margin-top:5px}.panel{background:#fff;border:1px solid var(--line);border-radius:10px;padding:22px;margin-bottom:18px}.login-box{max-width:520px}.field{margin-bottom:12px}.field label{display:block;font-size:12px;font-weight:700;margin-bottom:5px;color:#5d6972}.field input,.field textarea{width:100%;padding:11px;border:1px solid #ccd5da;border-radius:6px;font:inherit}.field textarea{min-height:82px;resize:vertical}.login-actions,.actions{display:flex;gap:10px;flex-wrap:wrap}.status{margin:0 0 18px;background:#eaf5ef;border:1px solid #cde5d6;padding:12px 14px;border-radius:7px;font-size:13px;color:#285d3e}.status.error{background:#fff0ef;border-color:#f0cbc7;color:#8c2f29}.notice{margin:0 0 18px;background:#eef5f8;border:1px solid #d5e5eb;padding:14px;border-radius:7px;font-size:13px;color:#365563}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}.card{background:#fff;padding:20px;border:1px solid var(--line);border-radius:9px}.card h2{font-size:17px;color:var(--navy);margin:0 0 14px}.preview{width:100%;aspect-ratio:16/9;background:#e8eef1;display:grid;place-items:center;overflow:hidden;margin-bottom:12px;border-radius:6px}.preview img{width:100%;height:100%;object-fit:cover}.actions{margin-top:22px}.secondary{background:#fff!important;color:var(--navy)!important;border:1px solid var(--navy)!important}.danger{background:#7a2b27!important}.section-title{margin:0 0 14px;color:var(--navy);font-size:21px}.settings-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}.settings-card{border:1px solid var(--line);border-radius:9px;padding:18px;background:#fff}.settings-card.full{grid-column:1/-1}.small-help{font-size:11px;color:var(--muted);margin-top:5px}.image-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}.image-box .preview{aspect-ratio:2/1}.promise-edit{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.product-heading{margin-top:24px}@media(max-width:760px){.grid,.settings-grid,.image-row,.promise-edit{grid-template-columns:1fr}.settings-card.full{grid-column:auto}.head{align-items:flex-start;flex-direction:column}}
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="head">
-      <div><h1>바다에서바로 관리자</h1><div class="sub">Supabase 운영 DB 연결 · 상품명 / 설명 / 가격 / 배지 / 사진 관리</div></div>
+      <div><h1>바다에서바로 관리자</h1><div class="sub">메인 화면 + 판매상품 + 사진을 Supabase에서 통합 관리</div></div>
       <a href="index.html">사이트 보기</a>
     </div>
 
@@ -23,15 +23,67 @@
       <div class="field"><label>관리자</label><input type="text" value="bada.baroshop@gmail.com" readonly></div>
       <div class="field"><label>비밀번호</label><input id="password" type="password" autocomplete="current-password" placeholder="8자 이상"></div>
       <div class="login-actions"><button id="loginBtn" class="btn">로그인</button><button id="setupBtn" class="btn secondary" hidden>관리자 비밀번호 등록</button></div>
-      <div id="loginNotice" class="notice" style="margin-top:16px">이제 이메일 인증이나 회원가입을 사용하지 않습니다.</div>
+      <div id="loginNotice" class="notice" style="margin-top:16px">이메일 인증이나 회원가입을 사용하지 않습니다.</div>
     </section>
 
     <section id="adminPanel" hidden>
-      <div class="notice">변경 내용은 BADA_BAROSHOP Supabase DB에 저장됩니다. 상품 사진은 Supabase Storage에 저장됩니다.</div>
+      <div class="notice">상단 메인 화면과 판매상품을 이 페이지에서 수정하면 BADA_BAROSHOP Supabase DB에 저장되고 실제 사이트에 반영됩니다.</div>
+
+      <section class="panel">
+        <h2 class="section-title">메인 화면 관리</h2>
+        <div class="settings-grid">
+          <div class="settings-card full">
+            <div class="field"><label>상단 공지 문구</label><input id="topbarText"></div>
+          </div>
+
+          <div class="settings-card">
+            <div class="field"><label>영문 소제목</label><input id="heroEyebrow"></div>
+            <div class="field"><label>메인 제목</label><textarea id="heroTitle"></textarea><div class="small-help">줄바꿈 위치에 | 를 입력하세요.</div></div>
+            <div class="field"><label>메인 설명</label><textarea id="heroDescription"></textarea><div class="small-help">줄바꿈 위치에 | 를 입력하세요.</div></div>
+            <div class="field"><label>오른쪽 문구</label><textarea id="heroNote"></textarea><div class="small-help">줄바꿈 위치에 | 를 입력하세요.</div></div>
+          </div>
+
+          <div class="settings-card">
+            <div class="image-row">
+              <div class="image-box">
+                <label>메인 배경 사진</label>
+                <div class="preview" id="heroBackgroundPreview">사진 미등록</div>
+                <input id="heroBackgroundFile" type="file" accept="image/jpeg,image/png,image/webp">
+              </div>
+              <div class="image-box">
+                <label>메인 대표상품 사진</label>
+                <div class="preview" id="heroProductPreview">사진 미등록</div>
+                <input id="heroProductFile" type="file" accept="image/jpeg,image/png,image/webp">
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-card full">
+            <h3>브랜드 약속 4개</h3>
+            <div class="promise-edit">
+              <div><div class="field"><label>01 제목</label><input id="promise1Title"></div><div class="field"><label>01 설명</label><input id="promise1Text"></div></div>
+              <div><div class="field"><label>02 제목</label><input id="promise2Title"></div><div class="field"><label>02 설명</label><input id="promise2Text"></div></div>
+              <div><div class="field"><label>03 제목</label><input id="promise3Title"></div><div class="field"><label>03 설명</label><input id="promise3Text"></div></div>
+              <div><div class="field"><label>04 제목</label><input id="promise4Title"></div><div class="field"><label>04 설명</label><input id="promise4Text"></div></div>
+            </div>
+          </div>
+
+          <div class="settings-card full">
+            <h3>인기상품 영역 문구</h3>
+            <div class="promise-edit">
+              <div class="field"><label>영문 소제목</label><input id="productsKicker"></div>
+              <div class="field"><label>제목</label><input id="productsTitle"></div>
+              <div class="field"><label>설명</label><input id="productsSubtitle"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <h2 class="section-title product-heading">판매상품 관리</h2>
       <div class="grid" id="editorGrid"></div>
       <div class="actions"><button id="saveBtn" class="btn">전체 저장</button><button id="logoutBtn" class="btn danger">로그아웃</button></div>
     </section>
   </div>
-  <script src="admin.js?v=20260905-customauth1"></script>
+  <script src="admin.js?v=20260905-settings1"></script>
 </body>
 </html>
