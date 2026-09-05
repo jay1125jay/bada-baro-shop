@@ -6,7 +6,7 @@
   <title>바다에서바로 관리자</title>
   <style>
     :root{--navy:#07314d;--line:#dfe6ea;--bg:#f4f7f9;--muted:#6f7f89;--red:#bf342c}
-    *{box-sizing:border-box}body{font-family:Arial,'Noto Sans KR',sans-serif;margin:0;background:var(--bg);color:#17232c}.wrap{width:min(1120px,calc(100% - 32px));margin:34px auto}.head{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:22px}.head h1{margin:0;color:var(--navy);font-size:28px}.head a,.head button,.btn{background:var(--navy);color:#fff;border:0;text-decoration:none;padding:11px 15px;border-radius:6px;font-weight:700;cursor:pointer}.sub{color:var(--muted);font-size:13px;margin-top:5px}.panel{background:#fff;border:1px solid var(--line);border-radius:10px;padding:22px;margin-bottom:18px}.login-box{max-width:520px}.field{margin-bottom:12px}.field label{display:block;font-size:12px;font-weight:700;margin-bottom:5px;color:#5d6972}.field input,.field textarea{width:100%;padding:11px;border:1px solid #ccd5da;border-radius:6px;font:inherit}.field textarea{min-height:82px;resize:vertical}.login-actions,.actions{display:flex;gap:10px;flex-wrap:wrap}.status{margin:0 0 18px;background:#eaf5ef;border:1px solid #cde5d6;padding:12px 14px;border-radius:7px;font-size:13px;color:#285d3e}.status.error{background:#fff0ef;border-color:#f0cbc7;color:#8c2f29}.notice{margin:0 0 18px;background:#eef5f8;border:1px solid #d5e5eb;padding:14px;border-radius:7px;font-size:13px;color:#365563}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}.card{background:#fff;padding:20px;border:1px solid var(--line);border-radius:9px}.card h2{font-size:17px;color:var(--navy);margin:0 0 14px}.preview{width:100%;aspect-ratio:16/9;background:#e8eef1;display:grid;place-items:center;overflow:hidden;margin-bottom:12px;border-radius:6px}.preview img{width:100%;height:100%;object-fit:cover}.actions{margin-top:22px}.danger{background:#7a2b27!important}@media(max-width:760px){.grid{grid-template-columns:1fr}.head{align-items:flex-start;flex-direction:column}}
+    *{box-sizing:border-box}body{font-family:Arial,'Noto Sans KR',sans-serif;margin:0;background:var(--bg);color:#17232c}.wrap{width:min(1120px,calc(100% - 32px));margin:34px auto}.head{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:22px}.head h1{margin:0;color:var(--navy);font-size:28px}.head a,.head button,.btn{background:var(--navy);color:#fff;border:0;text-decoration:none;padding:11px 15px;border-radius:6px;font-weight:700;cursor:pointer}.sub{color:var(--muted);font-size:13px;margin-top:5px}.panel{background:#fff;border:1px solid var(--line);border-radius:10px;padding:22px;margin-bottom:18px}.login-box{max-width:520px}.field{margin-bottom:12px}.field label{display:block;font-size:12px;font-weight:700;margin-bottom:5px;color:#5d6972}.field input,.field textarea{width:100%;padding:11px;border:1px solid #ccd5da;border-radius:6px;font:inherit}.field textarea{min-height:82px;resize:vertical}.login-actions,.actions{display:flex;gap:10px;flex-wrap:wrap}.status{margin:0 0 18px;background:#eaf5ef;border:1px solid #cde5d6;padding:12px 14px;border-radius:7px;font-size:13px;color:#285d3e}.status.error{background:#fff0ef;border-color:#f0cbc7;color:#8c2f29}.notice{margin:0 0 18px;background:#eef5f8;border:1px solid #d5e5eb;padding:14px;border-radius:7px;font-size:13px;color:#365563}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}.card{background:#fff;padding:20px;border:1px solid var(--line);border-radius:9px}.card h2{font-size:17px;color:var(--navy);margin:0 0 14px}.preview{width:100%;aspect-ratio:16/9;background:#e8eef1;display:grid;place-items:center;overflow:hidden;margin-bottom:12px;border-radius:6px}.preview img{width:100%;height:100%;object-fit:cover}.actions{margin-top:22px}.secondary{background:#fff!important;color:var(--navy)!important;border:1px solid var(--navy)!important}.danger{background:#7a2b27!important}@media(max-width:760px){.grid{grid-template-columns:1fr}.head{align-items:flex-start;flex-direction:column}}
   </style>
 </head>
 <body>
@@ -21,9 +21,9 @@
     <section id="loginPanel" class="panel login-box">
       <h2>관리자 로그인</h2>
       <div class="field"><label>관리자 이메일</label><input id="email" type="email" value="bada.baroshop@gmail.com" autocomplete="username" readonly></div>
-      <div class="field"><label>비밀번호</label><input id="password" type="password" autocomplete="current-password" placeholder="관리자 비밀번호"></div>
-      <div class="login-actions"><button id="loginBtn" class="btn">로그인</button></div>
-      <div class="notice" style="margin-top:16px">관리자 계정은 이미 생성되어 있습니다. 이제 회원가입 없이 로그인만 사용합니다.</div>
+      <div class="field"><label>비밀번호</label><input id="password" type="password" autocomplete="current-password" placeholder="8자 이상"></div>
+      <div class="login-actions"><button id="loginBtn" class="btn">로그인</button><button id="setupBtn" class="btn secondary">새 관리자 비밀번호 설정</button></div>
+      <div class="notice" style="margin-top:16px">처음 한 번만 원하는 비밀번호를 입력하고 “새 관리자 비밀번호 설정”을 누르세요. 이후에는 로그인만 사용합니다.</div>
     </section>
 
     <section id="adminPanel" hidden>
@@ -32,6 +32,6 @@
       <div class="actions"><button id="saveBtn" class="btn">전체 저장</button><button id="logoutBtn" class="btn danger">로그아웃</button></div>
     </section>
   </div>
-  <script src="admin.js?v=20260905-db2"></script>
+  <script src="admin.js?v=20260905-db3"></script>
 </body>
 </html>
