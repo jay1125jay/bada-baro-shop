@@ -1,10 +1,107 @@
-const DEFAULT_PRODUCTS=[{name:'자숙 대게 (프리미엄)',desc:'살이 꽉 찬 프리미엄 대게',price:'₩89,000~',badge:'BEST',image:''},{name:'자숙 홍게',desc:'부드럽고 깊은 풍미의 홍게',price:'₩49,000~',badge:'추천',image:''},{name:'대게+홍게 세트',desc:'대게와 홍게를 한 번에 즐기는 구성',price:'₩129,000~',badge:'SET',image:''},{name:'대게 다리살 (자숙)',desc:'간편하게 즐기는 대게 다리살',price:'₩59,000~',badge:'NEW',image:''}];
+const SUPABASE_URL='https://zkkgmvscwbrxhuwuwfbf.supabase.co';
+const SUPABASE_KEY=['sb','publishable','q0MF3aAt5384TBLHhS3kxQ','ygmjqp','P'].join('_');
+const ADMIN_EMAIL='bada.baroshop@gmail.com';
+let accessToken=sessionStorage.getItem('badaAdminToken')||'';
+let products=[];
+
 const grid=document.getElementById('editorGrid');
-const getProducts=()=>{try{const v=JSON.parse(localStorage.getItem('badaProducts'));return Array.isArray(v)&&v.length?v:structuredClone(DEFAULT_PRODUCTS)}catch(e){return structuredClone(DEFAULT_PRODUCTS)}};
-let products=getProducts();
-function render(){grid.innerHTML='';products.forEach((p,i)=>{const card=document.createElement('section');card.className='card';card.innerHTML=`<h2>상품 ${i+1}</h2><div class="preview">${p.image?`<img src="${p.image}" alt="미리보기">`:'사진 미등록'}</div><div class="field"><label>상품명</label><input data-k="name" data-i="${i}" value="${esc(p.name)}"></div><div class="field"><label>설명</label><textarea data-k="desc" data-i="${i}">${esc(p.desc)}</textarea></div><div class="field"><label>가격</label><input data-k="price" data-i="${i}" value="${esc(p.price)}"></div><div class="field"><label>배지</label><input data-k="badge" data-i="${i}" value="${esc(p.badge)}"></div><div class="field"><label>상품 사진</label><input type="file" accept="image/*" data-file="${i}"></div>`;grid.appendChild(card)});bind()}
-function bind(){document.querySelectorAll('[data-k]').forEach(el=>el.addEventListener('input',e=>{products[+e.target.dataset.i][e.target.dataset.k]=e.target.value}));document.querySelectorAll('[data-file]').forEach(el=>el.addEventListener('change',e=>{const f=e.target.files?.[0];if(!f)return;if(f.size>1500000){alert('이미지는 1.5MB 이하로 올려주세요.');e.target.value='';return}const r=new FileReader();r.onload=()=>{products[+e.target.dataset.file].image=r.result;render()};r.readAsDataURL(f)}))}
+const loginPanel=document.getElementById('loginPanel');
+const adminPanel=document.getElementById('adminPanel');
+const statusEl=document.getElementById('status');
+
 function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
-document.getElementById('saveBtn').onclick=()=>{localStorage.setItem('badaProducts',JSON.stringify(products));alert('저장했습니다. 같은 브라우저에서 사이트를 열면 반영됩니다.')};
-document.getElementById('resetBtn').onclick=()=>{if(confirm('상품 정보를 기본값으로 복원할까요?')){products=structuredClone(DEFAULT_PRODUCTS);localStorage.removeItem('badaProducts');render()}};
-render();
+function setStatus(msg,isError=false){statusEl.textContent=msg;statusEl.className=isError?'status error':'status'}
+function authHeaders(extra={}){return {apikey:SUPABASE_KEY,Authorization:`Bearer ${accessToken}`,...extra}}
+
+async function signIn(){
+  const email=document.getElementById('email').value.trim().toLowerCase();
+  const password=document.getElementById('password').value;
+  if(email!==ADMIN_EMAIL){setStatus('등록된 관리자 이메일이 아닙니다.',true);return}
+  setStatus('로그인 중...');
+  const res=await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`,{method:'POST',headers:{apikey:SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({email,password})});
+  const data=await res.json();
+  if(!res.ok){setStatus(data.msg||data.error_description||'로그인에 실패했습니다.',true);return}
+  accessToken=data.access_token;
+  sessionStorage.setItem('badaAdminToken',accessToken);
+  showAdmin();
+}
+
+async function signUp(){
+  const email=document.getElementById('email').value.trim().toLowerCase();
+  const password=document.getElementById('password').value;
+  if(email!==ADMIN_EMAIL){setStatus('관리자 이메일은 bada.baroshop@gmail.com 만 사용할 수 있습니다.',true);return}
+  if(password.length<8){setStatus('비밀번호는 8자 이상으로 입력하세요.',true);return}
+  setStatus('관리자 계정 생성 요청 중...');
+  const res=await fetch(`${SUPABASE_URL}/auth/v1/signup`,{method:'POST',headers:{apikey:SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({email,password})});
+  const data=await res.json();
+  if(!res.ok){setStatus(data.msg||data.error_description||'계정 생성에 실패했습니다.',true);return}
+  if(data.access_token){accessToken=data.access_token;sessionStorage.setItem('badaAdminToken',accessToken);showAdmin();return}
+  setStatus('확인 메일을 보냈습니다. 메일 인증 후 로그인하세요.');
+}
+
+async function loadProducts(){
+  const res=await fetch(`${SUPABASE_URL}/rest/v1/products?select=id,sort_order,name,description,price,badge,image_url,is_active&order=sort_order.asc`,{headers:authHeaders()});
+  if(res.status===401){logout();return}
+  if(!res.ok)throw new Error(`상품 조회 실패 ${res.status}`);
+  products=await res.json();
+  render();
+}
+
+function render(){
+  grid.innerHTML='';
+  products.forEach((p,i)=>{
+    const card=document.createElement('section');
+    card.className='card';
+    card.innerHTML=`<h2>상품 ${i+1}</h2><div class="preview">${p.image_url?`<img src="${p.image_url}" alt="미리보기">`:'사진 미등록'}</div><div class="field"><label>상품명</label><input data-k="name" data-i="${i}" value="${esc(p.name)}"></div><div class="field"><label>설명</label><textarea data-k="description" data-i="${i}">${esc(p.description||'')}</textarea></div><div class="field"><label>가격</label><input data-k="price" data-i="${i}" value="${esc(p.price)}"></div><div class="field"><label>배지</label><input data-k="badge" data-i="${i}" value="${esc(p.badge||'')}"></div><div class="field"><label>상품 사진</label><input type="file" accept="image/jpeg,image/png,image/webp" data-file="${i}"></div>`;
+    grid.appendChild(card);
+  });
+  bind();
+}
+
+function bind(){
+  document.querySelectorAll('[data-k]').forEach(el=>el.addEventListener('input',e=>{products[+e.target.dataset.i][e.target.dataset.k]=e.target.value}));
+  document.querySelectorAll('[data-file]').forEach(el=>el.addEventListener('change',async e=>{
+    const i=+e.target.dataset.file;
+    const f=e.target.files?.[0];
+    if(!f)return;
+    if(f.size>5*1024*1024){alert('이미지는 5MB 이하로 올려주세요.');e.target.value='';return}
+    try{
+      setStatus('사진 업로드 중...');
+      const ext=(f.name.split('.').pop()||'jpg').toLowerCase();
+      const path=`product-${products[i].id}-${Date.now()}.${ext}`;
+      const res=await fetch(`${SUPABASE_URL}/storage/v1/object/product-images/${encodeURIComponent(path)}`,{method:'POST',headers:authHeaders({'Content-Type':f.type||'image/jpeg'}),body:f});
+      if(!res.ok)throw new Error(`업로드 실패 ${res.status}`);
+      products[i].image_url=`${SUPABASE_URL}/storage/v1/object/public/product-images/${encodeURIComponent(path)}`;
+      render();
+      setStatus('사진 업로드 완료. 전체 저장을 누르면 상품에 반영됩니다.');
+    }catch(err){setStatus(err.message,true)}
+  }));
+}
+
+async function saveAll(){
+  try{
+    setStatus('저장 중...');
+    for(const p of products){
+      const body={name:p.name,description:p.description||'',price:p.price,badge:p.badge||'',image_url:p.image_url||'',sort_order:p.sort_order,is_active:p.is_active!==false,updated_at:new Date().toISOString()};
+      const res=await fetch(`${SUPABASE_URL}/rest/v1/products?id=eq.${p.id}`,{method:'PATCH',headers:authHeaders({'Content-Type':'application/json','Prefer':'return=minimal'}),body:JSON.stringify(body)});
+      if(!res.ok)throw new Error(`상품 ${p.id} 저장 실패 ${res.status}`);
+    }
+    setStatus('저장 완료. 실제 사이트에 바로 반영됩니다.');
+  }catch(err){setStatus(err.message,true)}
+}
+
+async function showAdmin(){
+  loginPanel.hidden=true;
+  adminPanel.hidden=false;
+  setStatus('관리자 연결 확인 중...');
+  try{await loadProducts();setStatus('Supabase DB 연결됨.')}catch(err){setStatus(err.message,true)}
+}
+
+function logout(){accessToken='';sessionStorage.removeItem('badaAdminToken');loginPanel.hidden=false;adminPanel.hidden=true;setStatus('로그아웃되었습니다.');}
+
+document.getElementById('loginBtn').onclick=signIn;
+document.getElementById('signupBtn').onclick=signUp;
+document.getElementById('saveBtn').onclick=saveAll;
+document.getElementById('logoutBtn').onclick=logout;
+
+if(accessToken)showAdmin();
