@@ -27,6 +27,37 @@ function renderProducts(products){
   });
 }
 
+function setText(id,value){
+  const el=document.getElementById(id);
+  if(el&&value!==undefined&&value!==null)el.textContent=String(value);
+}
+
+function setLines(id,value,withSeal=false){
+  const el=document.getElementById(id);
+  if(!el||value===undefined||value===null)return;
+  el.innerHTML=String(value).split('|').map(escapeHtml).join('<br>')+(withSeal?'<span>海</span>':'');
+}
+
+function safeCssUrl(value){
+  return String(value||'').replace(/["'()\\\n\r]/g,'');
+}
+
+function applySettings(s){
+  if(!s)return;
+  setText('topbarText',s.topbar_text);
+  setText('heroEyebrow',s.hero_eyebrow);
+  setLines('heroTitle',s.hero_title);
+  setLines('heroDescription',s.hero_description);
+  setLines('heroNote',s.hero_note,true);
+  setText('promise1Title',s.promise1_title);setText('promise1Text',s.promise1_text);
+  setText('promise2Title',s.promise2_title);setText('promise2Text',s.promise2_text);
+  setText('promise3Title',s.promise3_title);setText('promise3Text',s.promise3_text);
+  setText('promise4Title',s.promise4_title);setText('promise4Text',s.promise4_text);
+  setText('productsKicker',s.products_kicker);setText('productsTitle',s.products_title);setText('productsSubtitle',s.products_subtitle);
+  if(s.hero_background_url)document.documentElement.style.setProperty('--hero-bg',`url("${safeCssUrl(s.hero_background_url)}")`);
+  if(s.hero_product_url)document.documentElement.style.setProperty('--hero-product',`url("${safeCssUrl(s.hero_product_url)}")`);
+}
+
 async function loadProducts(){
   try{
     const res=await fetch(`${SUPABASE_URL}/rest/v1/products?select=id,sort_order,name,description,price,badge,image_url&is_active=eq.true&order=sort_order.asc`,{headers:{apikey:SUPABASE_KEY}});
@@ -39,4 +70,14 @@ async function loadProducts(){
   }
 }
 
+async function loadSettings(){
+  try{
+    const res=await fetch(`${SUPABASE_URL}/rest/v1/site_settings?select=*&id=eq.1`,{headers:{apikey:SUPABASE_KEY}});
+    if(!res.ok)throw new Error(`HTTP ${res.status}`);
+    const rows=await res.json();
+    if(Array.isArray(rows)&&rows[0])applySettings(rows[0]);
+  }catch(err){console.error('사이트 설정 DB 연결 실패:',err)}
+}
+
+loadSettings();
 loadProducts();
