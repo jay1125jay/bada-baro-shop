@@ -26,6 +26,20 @@ async function signIn(){
   await showAdmin();
 }
 
+async function setupAdmin(){
+  const email=ADMIN_EMAIL;
+  const password=document.getElementById('password').value;
+  if(password.length<8){setStatus('새 관리자 비밀번호를 8자 이상 입력하세요.',true);return}
+  setStatus('관리자 계정 설정 중...');
+  const res=await fetch(`${SUPABASE_URL}/auth/v1/signup`,{method:'POST',headers:{apikey:SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({email,password})});
+  const data=await res.json();
+  if(!res.ok){setStatus(data.msg||data.error_description||'관리자 설정에 실패했습니다.',true);return}
+  if(!data.access_token){setStatus('관리자 세션 생성에 실패했습니다.',true);return}
+  accessToken=data.access_token;
+  sessionStorage.setItem('badaAdminToken',accessToken);
+  await showAdmin();
+}
+
 async function loadProducts(){
   const res=await fetch(`${SUPABASE_URL}/rest/v1/products?select=id,sort_order,name,description,price,badge,image_url,is_active&order=sort_order.asc`,{headers:authHeaders()});
   if(res.status===401){logout();return}
@@ -87,6 +101,8 @@ async function showAdmin(){
 function logout(){accessToken='';sessionStorage.removeItem('badaAdminToken');loginPanel.hidden=false;adminPanel.hidden=true;setStatus('로그아웃되었습니다.');}
 
 document.getElementById('loginBtn').onclick=signIn;
+const setupBtn=document.getElementById('setupBtn');
+if(setupBtn)setupBtn.onclick=setupAdmin;
 document.getElementById('saveBtn').onclick=saveAll;
 document.getElementById('logoutBtn').onclick=logout;
 document.getElementById('password').addEventListener('keydown',e=>{if(e.key==='Enter')signIn()});
