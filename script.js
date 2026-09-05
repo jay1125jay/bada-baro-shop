@@ -8,6 +8,8 @@ function getProducts(){
   }catch(e){return DEFAULT_PRODUCTS;}
 }
 
+const crabPlaceholder=`<svg viewBox="0 0 220 180" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M76 88c0-30 16-52 34-52s34 22 34 52c0 28-17 48-34 48S76 116 76 88Z"/><path d="M82 65C61 47 42 47 31 59c-9 10-8 26 2 34 11 8 24 2 30-5M138 65c21-18 40-18 51-6 9 10 8 26-2 34-11 8-24 2-30-5M79 96 39 118M86 114l-32 34M141 96l40 22M134 114l32 34M95 134l-9 28M125 134l9 28"/><circle cx="98" cy="76" r="2.5" fill="currentColor"/><circle cx="122" cy="76" r="2.5" fill="currentColor"/><path d="M98 100c8 5 16 5 24 0"/></g></svg>`;
+
 function renderProducts(){
   const grid=document.getElementById('productGrid');
   if(!grid)return;
@@ -15,7 +17,7 @@ function renderProducts(){
   getProducts().forEach((p)=>{
     const card=document.createElement('article');
     card.className='product-card';
-    const media=p.image?`<div class="product-media"><img src="${p.image}" alt="${escapeHtml(p.name)}"></div>`:`<div class="product-media"><div class="product-placeholder" aria-hidden="true"></div></div>`;
+    const media=p.image?`<div class="product-media"><img src="${p.image}" alt="${escapeHtml(p.name)}"></div>`:`<div class="product-media"><div class="product-placeholder">${crabPlaceholder}</div></div>`;
     card.innerHTML=`${p.badge?`<span class="product-badge">${escapeHtml(p.badge)}</span>`:''}${media}<div class="product-info"><h3>${escapeHtml(p.name)}</h3><p>${escapeHtml(p.desc)}</p><div class="product-price">${escapeHtml(p.price)}</div></div>`;
     grid.appendChild(card);
   });
@@ -25,19 +27,7 @@ function escapeHtml(value=''){
   return String(value).replace(/[&<>'"]/g,(c)=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#039;','"':'&quot;'}[c]));
 }
 
-async function loadApprovedLogo(){
-  const logo=document.getElementById('brandLogo');
-  if(!logo)return;
-  try{
-    const res=await fetch('bada-logo.jpg.base64.txt',{cache:'force-cache'});
-    if(!res.ok)return;
-    const base64=(await res.text()).trim();
-    if(base64)logo.src=`data:image/jpeg;base64,${base64}`;
-  }catch(e){}
-}
-
 renderProducts();
-loadApprovedLogo();
 
 if(location.hostname==='localhost'||location.protocol==='file:'){
   const a=document.createElement('a');
